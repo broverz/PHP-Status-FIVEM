@@ -10,10 +10,6 @@ class ServerStatus{
   public static function ServerBased($ip,$port){
     return new ServerBased($ip,$port);
   }
-
-  public static function FivemBased($code){
-    return new FivemBased($code);
-  }
  
   protected function MakeRequest($Url){
     $GetData=json_decode(@file_get_contents($Url,false,$this->StreamContext),true);
@@ -25,39 +21,6 @@ class ServerStatus{
   }
 
 }
-
-class FivemBased extends ServerStatus{
-  private string $ServerCode;
-  private array $CachedData;
-
-  function __construct($code){
-
-    $context= stream_context_create(array(
-      'http'=>array(
-        'method'=>"GET",
-        'header'=>"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36 OPR/82.0.4227.58\r\n"
-      )
-    ));
-
-    parent::SetStreamContext($context);
-
-    $this->ServerCode=$code;
-  }
-
-  private function GetData(){
-    try {
-      $Data= parent::MakeRequest("https://servers-frontend.fivem.net/api/servers/single/".$this->ServerCode);
-      if($Data["Data"]){
-        $this->CachedData=$Data["Data"];
-        return $Data["Data"];
-      }else{
-        return null;
-      }
-
-    } catch (\Throwable $th) {
-      return null;
-    }
-  }
 
   public function IsOnline(){
     $Data= $this->GetData();
